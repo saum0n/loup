@@ -1,0 +1,89 @@
+html {
+    font-family: arial, sans-serif;
+    padding-left: 1%;
+    color:#1d262e;
+}
+
+h3 {
+  text-decoration: underline;
+}
+
+
+::-moz-selection { /* Code for Firefox */
+
+    background: yellow;
+  }
+  
+  ::selection {
+
+    background: yellow;
+  }
+
+ol{
+    list-style: decimal-leading-zero;
+  }
+
+
+body {
+  background-color: #F8FAF5;
+  height: 100vh;
+}
+
+
+/* cursor */
+.circle {
+  height: 24px;
+  width: 24px;
+  border-radius: 24px;
+  background-color: #F8FAF5;
+
+  position: fixed; 
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 99999999; /* so that it stays on top of all other elements */
+}
+.cursor {
+  cursor: none;
+  color: #11181C;
+  pointer-events: none;
+  position: fixed;
+  display: block;
+  border-radius: 0;
+  
+  mix-blend-mode: difference;
+  top: 0;
+  left: 0;
+  z-index: 9999999999999999;  
+  
+}
+
+/* overlay pour les angles courbés de photos */
+
+
+.overlay {
+  border-radius: 20%;
+}
+
+.overlay2 {
+  border-radius: 40%;
+}
+
+.overlay3 {
+  border-radius: 50px;
+}
+
+details[open] {
+  padding: 0.1em;
+  padding-bottom: 3%;
+}
+
+
+
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
