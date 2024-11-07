@@ -1,1 +1,38 @@
-hey im loup
+git add .
+git commit -m "msg"
+git push origin HEAD:main
+
+<--->
+<--->
+
+Pour passer d'un repository à un autre :
+git remote set-url origin https://github.com/saum0n/ge.git
+
+pour vérifier :
+git remote -v
+
+Si ne fonctionne pas :
+
+git add .
+git commit -m "commit"
+git push
+
+
+git remote add origin https://github.com/saum0n/ge.git
+git branch -M main
+git push -u origin main
+
+
+git add .
+git commit -m "commit"
+git push
+
+
+
+git branch -m main masterrrr
+git fetch origin
+git branch -u origin/masterrrr masterrrr
+git remote set-head origin -a
+
+
+/// si ça ne fonctionne vrmt pas DEMANDER A CHATGPT

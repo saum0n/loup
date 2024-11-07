@@ -1,5 +1,5 @@
 html {
-    font-family: arial, sans-serif;
+    font-family: menlo, sans-serif;
     padding-left: 1%;
     color:#1d262e;
 }
@@ -8,6 +8,9 @@ h3 {
   text-decoration: underline;
 }
 
+p {
+  letter-spacing: -0.5px;
+}
 
 ::-moz-selection { /* Code for Firefox */
 
@@ -86,4 +89,16 @@ details[open] {
   margin-left: auto;
   margin-right: auto;
   width: 50%;
+}
+
+
+
+#output{
+  /* The command I know best. */
+  text-transform:uppercase;
+  color:#fdf6f0;
+  font-size:6em;
+  font-weight:bold;
+  text-align:left;
+
 }
