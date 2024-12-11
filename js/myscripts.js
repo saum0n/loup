@@ -37,3 +37,5 @@ function animateTitle() {
 
 // Démarre l'animation avec un intervalle
 const animationInterval = setInterval(animateTitle, animationSpeed);
+
+
