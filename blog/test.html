@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Articles Grid</title>
+    <style>
+        :root {
+            --primary-color: #1d262e;
+            --secondary-color: #ebeee1;
+            --accent-color: #ff6b6b;
+            --background-color: #f8faf5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--primary-color);
+            background-color: var(--background-color);
+        }
+
+        body {
+            padding: 2rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .grid-item {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            aspect-ratio: 1 / 1;
+        }
+
+        .grid-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+        }
+
+        .grid-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .grid-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .notes {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            display: none;
+            z-index: 100;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(29, 38, 46, 0.8);
+            display: none;
+            z-index: 99;
+            backdrop-filter: blur(5px);
+        }
+
+        .close-button {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--accent-color);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .close-button:hover {
+            transform: scale(1.1);
+        }
+
+        h2 {
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+
+        ul {
+            list-style-type: none;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="grid">
+        <div class="grid-item">
+            <img src="https://www.economist.com/cdn-cgi/image/width=1424,quality=80,format=auto/content-assets/images/20241221_STD001.jpg" alt="Article 1">
+            <div class="notes">
+                <button class="close-button">×</button>
+                <h2>Article sur les jouets et la société</h2>
+                <ul>
+                    <li>Impact des jouets sur le développement cognitif</li>
+                    <li>Études sociologiques récentes</li>
+                    <li>Recommandations pour les parents</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="grid-item">
+            <img src="https://picsum.photos/400/320" alt="Article 2">
+            <div class="notes">
+                <button class="close-button">×</button>
+                <h2>Design et quotidien</h2>
+                <ul>
+                    <li>Création sur ProCreate</li>
+                    <li>Process de design thinking</li>
+                    <li>Applications pratiques</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="grid-item">
+            <img src="https://www.economist.com/cdn-cgi/image/width=1424,quality=80,format=auto/content-assets/images/20241221_STD001.jpg" alt="Article 3">
+            <div class="notes">
+                <button class="close-button">×</button>
+                <h2>Outils numériques</h2>
+                <ul>
+                    <li>Workflow Illustrator</li>
+                    <li>Techniques d'assemblage</li>
+                    <li>Optimisation du processus</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay"></div>
+
+    <script>
+        // Le script JavaScript reste inchangé
+    </script>
+</body>
+</html>
