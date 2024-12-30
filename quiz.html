@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quelle association te convient le mieux ?</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        #quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-right: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .stats {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+        .header-nav {
+            margin-bottom: 20px;
+        }
+        .nav-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .nav-link:hover {
+            background-color: #45a049;
+        }
+        .detailed-stats {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .response-chart {
+            margin-top: 20px;
+            width: 100%;
+            height: 200px;
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <div class="header-nav">
+            <a href="admin.html" class="nav-link">Administration</a>
+        </div>
+        <h1>Quelle association te convient le mieux ?</h1>
+        <div id="questions"></div>
+        <button id="prev-btn" style="display: none;">Retour</button>
+        <button id="next-btn">Suivant</button>
+        <button id="submit-btn" style="display: none;">Voir les résultats</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const { jsPDF } = window.jspdf;
+
+        // Initialisation du stockage des statistiques
+        if (!localStorage.getItem('quizStats')) {
+            localStorage.setItem('quizStats', JSON.stringify({
+                totalParticipants: 0,
+                associationCounts: {},
+                responses: [],
+                questionStats: {}
+            }));
+        }
+
+        let currentQuestion = 0;
+        const answers = [];
+        
+        // Chargement des questions depuis le stockage local
+        const questions = JSON.parse(localStorage.getItem('quizQuestions') || '[]');
+        const associations = JSON.parse(localStorage.getItem('quizAssociations') || '{}');
+
+        function displayQuestion() {
+            if (questions.length === 0) {
+                document.getElementById('questions').innerHTML = 
+                    '<p>Aucune question n\'est disponible pour le moment. Veuillez contacter l\'administrateur.</p>';
+                return;
+            }
+
+            const questionContainer = document.getElementById('questions');
+            const question = questions[currentQuestion];
+            
+            let html = `<div class="question">
+                <h3>Question ${currentQuestion + 1}/${questions.length}: ${question.question}</h3>
+                ${question.options.map((option, index) => 
+                    `<label>
+                        <input type="radio" name="q${currentQuestion}" value="${option}" ${answers[currentQuestion] === option ? 'checked' : ''}>
+                        ${option}
+                    </label><br>`
+                ).join('')}
+            </div>`;
+            
+            questionContainer.innerHTML = html;
+
+            updateNavigationButtons();
+        }
+
+        function updateNavigationButtons() {
+            document.getElementById('prev-btn').style.display = currentQuestion > 0 ? 'inline-block' : 'none';
+            document.getElementById('next-btn').style.display = currentQuestion < questions.length - 1 ? 'inline-block' : 'none';
+            document.getElementById('submit-btn').style.display = currentQuestion === questions.length - 1 ? 'inline-block' : 'none';
+        }
+
+        function updateStats(responses, finalAssociation) {
+            const stats = JSON.parse(localStorage.getItem('quizStats'));
+            stats.totalParticipants++;
+            stats.associationCounts[finalAssociation] = (stats.associationCounts[finalAssociation] || 0) + 1;
+            
+            // Stockage des réponses individuelles avec timestamp
+            const responseData = {
+                date: new Date().toISOString(),
+                answers: responses,
+                finalAssociation: finalAssociation
+            };
+            stats.responses.push(responseData);
+
+            // Mise à jour des statistiques par question
+            responses.forEach((answer, index) => {
+                if (!stats.questionStats[index]) {
+                    stats.questionStats[index] = {};
+                }
+                stats.questionStats[index][answer] = (stats.questionStats[index][answer] || 0) + 1;
+            });
+
+            localStorage.setItem('quizStats', JSON.stringify(stats));
+            return responseData;
+        }
+
+        function getMostPopularAssociation() {
+            const stats = JSON.parse(localStorage.getItem('quizStats'));
+            if (Object.keys(stats.associationCounts).length === 0) {
+                return "Aucune donnée disponible";
+            }
+            return Object.entries(stats.associationCounts)
+                .reduce((a, b) => (a[1] > b[1] ? a : b))[0];
+        }
+
+        function generatePDF(responseData) {
+            const doc = new jsPDF();
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(16);
+            doc.text("Résultats du questionnaire d'associations", 20, 20);
+            
+            doc.setFontSize(12);
+            let yPos = 40;
+
+            // Informations générales
+            doc.text(`Date : ${new Date(responseData.date).toLocaleDateString()}`, 20, yPos);
+            yPos += 10;
+            doc.text(`Association recommandée : ${responseData.finalAssociation}`, 20, yPos);
+            yPos += 20;
+
+            // Détail des réponses
+            doc.text("Vos réponses :", 20, yPos);
+            yPos += 10;
+
+            questions.forEach((q, index) => {
+                // Vérification de la place restante sur la page
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+
+                doc.text(`Question ${index + 1}: ${q.question}`, 20, yPos);
+                yPos += 7;
+                doc.text(`Votre réponse: ${responseData.answers[index]}`, 30, yPos);
+                yPos += 15;
+            });
+
+            doc.save('resultats-quiz-associations.pdf');
+        }
+
+        function determineAssociation() {
+            const associationCounts = {};
+            answers.forEach(answer => {
+                const association = associations[answer];
+                if (association) {
+                    associationCounts[association] = (associationCounts[association] || 0) + 1;
+                }
+            });
+
+            return Object.entries(associationCounts)
+                .reduce((a, b) => (a[1] > b[1] ? a : b), [null, 0])[0] || "Pas de recommandation disponible";
+        }
+
+        function showResults() {
+            const result = document.getElementById('result');
+            const finalAssociation = determineAssociation();
+            
+            const responseData = updateStats(answers, finalAssociation);
+            const stats = JSON.parse(localStorage.getItem('quizStats'));
+            
+            let html = `
+                <h2>Résultat</h2>
+                <p>L'association qui vous convient le mieux est : <strong>${finalAssociation}</strong></p>
+                
+                <div class="stats">
+                    <h3>Statistiques globales</h3>
+                    <p>Nombre total de participants : ${stats.totalParticipants}</p>
+                    <p>Association la plus recommandée : ${getMostPopularAssociation()}</p>
+                </div>
+                
+                <button onclick="generatePDF(${JSON.stringify(responseData)})">
+                    Télécharger mes résultats en PDF
+                </button>
+
+                <div class="detailed-stats">
+                    <h3>Détail de vos réponses</h3>
+                    ${questions.map((q, index) => `
+                        <p><strong>Question ${index + 1}:</strong> ${q.question}<br>
+                        Votre réponse : ${answers[index]}</p>
+                    `).join('')}
+                </div>`;
+
+            result.innerHTML = html;
+            
+            document.getElementById('questions').style.display = 'none';
+            document.getElementById('prev-btn').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('submit-btn').style.display = 'none';
+        }
+
+        function nextQuestion() {
+            const selectedOption = document.querySelector(`input[name="q${currentQuestion}"]:checked`);
+            if (selectedOption) {
+                answers[currentQuestion] = selectedOption.value;
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    displayQuestion();
+                } else {
+                    showResults();
+                }
+            } else {
+                alert("Veuillez sélectionner une option avant de continuer.");
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+            }
+        }
+
+        // Gestion des événements
+        document.getElementById('prev-btn').addEventListener('click', prevQuestion);
+        document.getElementById('next-btn').addEventListener('click', nextQuestion);
+        document.getElementById('submit-btn').addEventListener('click', showResults);
+
+        // Initialisation du quiz
+        displayQuestion();
+    </script>
+</body>
+</html>

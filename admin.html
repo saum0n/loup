@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Administration - Gestion des Questions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        .options-container {
+            margin-bottom: 10px;
+        }
+        .option-input {
+            display: flex;
+            margin-bottom: 5px;
+        }
+        .option-input input {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .question-list {
+            margin-top: 30px;
+        }
+        .question-item {
+            background-color: #f5f5f5;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .delete-btn {
+            background-color: #ff4444;
+        }
+        .delete-btn:hover {
+            background-color: #cc0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-nav">
+            <a href="quiz.html" class="nav-link">Voir le Quiz</a>
+        </div>
+        <h1>Gestion des Questions</h1>
+        
+        <div id="addQuestionForm">
+            <h2>Ajouter une nouvelle question</h2>
+            <div class="form-group">
+                <label for="questionText">Question :</label>
+                <input type="text" id="questionText" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Options :</label>
+                <div id="optionsContainer" class="options-container">
+                    <div class="option-input">
+                        <input type="text" class="option-text" placeholder="Option 1" required>
+                        <input type="text" class="option-association" placeholder="Association correspondante" required>
+                    </div>
+                </div>
+                <button onclick="addOptionField()">Ajouter une option</button>
+            </div>
+            
+            <button onclick="saveQuestion()">Enregistrer la question</button>
+        </div>
+
+        <div class="question-list">
+            <h2>Questions existantes</h2>
+            <div id="questionsList"></div>
+        </div>
+    </div>
+
+    <script>
+        // Initialisation du stockage
+        if (!localStorage.getItem('quizQuestions')) {
+            localStorage.setItem('quizQuestions', JSON.stringify([]));
+        }
+
+        function addOptionField() {
+            const container = document.getElementById('optionsContainer');
+            const optionCount = container.children.length + 1;
+            
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'option-input';
+            optionDiv.innerHTML = `
+                <input type="text" class="option-text" placeholder="Option ${optionCount}" required>
+                <input type="text" class="option-association" placeholder="Association correspondante" required>
+                <button onclick="removeOption(this)" class="delete-btn">Supprimer</button>
+            `;
+            
+            container.appendChild(optionDiv);
+        }
+
+        function removeOption(button) {
+            button.parentElement.remove();
+        }
+
+        function saveQuestion() {
+            const questionText = document.getElementById('questionText').value;
+            const optionsContainer = document.getElementById('optionsContainer');
+            const optionInputs = optionsContainer.getElementsByClassName('option-input');
+            
+            const options = [];
+            const associations = {};
+            
+            for (let optionInput of optionInputs) {
+                const optionText = optionInput.querySelector('.option-text').value;
+                const associationText = optionInput.querySelector('.option-association').value;
+                
+                if (optionText && associationText) {
+                    options.push(optionText);
+                    associations[optionText] = associationText;
+                }
+            }
+
+            if (!questionText || options.length < 2) {
+                alert('Veuillez remplir tous les champs requis (question et au moins 2 options)');
+                return;
+            }
+
+            const questions = JSON.parse(localStorage.getItem('quizQuestions'));
+            questions.push({
+                question: questionText,
+                options: options,
+                associations: associations
+            });
+            
+            localStorage.setItem('quizQuestions', JSON.stringify(questions));
+            localStorage.setItem('quizAssociations', JSON.stringify(associations));
+            
+            alert('Question enregistrée avec succès !');
+            resetForm();
+            displayQuestions();
+        }
+
+        function resetForm() {
+            document.getElementById('questionText').value = '';
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = `
+                <div class="option-input">
+                    <input type="text" class="option-text" placeholder="Option 1" required>
+                    <input type="text" class="option-association" placeholder="Association correspondante" required>
+                </div>
+            `;
+        }
+
+        function deleteQuestion(index) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cette question ?')) {
+                const questions = JSON.parse(localStorage.getItem('quizQuestions'));
+                questions.splice(index, 1);
+                localStorage.setItem('quizQuestions', JSON.stringify(questions));
+                displayQuestions();
+            }
+        }
+
+        function displayQuestions() {
+            const questions = JSON.parse(localStorage.getItem('quizQuestions'));
+            const container = document.getElementById('questionsList');
+            
+            container.innerHTML = questions.map((q, index) => `
+                <div class="question-item">
+                    <h3>Question ${index + 1}</h3>
+                    <p><strong>Question :</strong> ${q.question}</p>
+                    <p><strong>Options :</strong></p>
+                    <ul>
+                        ${q.options.map(opt => `
+                            <li>${opt} → ${q.associations[opt]}</li>
+                        `).join('')}
+                    </ul>
+                    <button onclick="deleteQuestion(${index})" class="delete-btn">Supprimer</button>
+                </div>
+            `).join('');
+        }
+
+        // Affichage initial des questions
+        displayQuestions();
+    </script>
+</body>
+</html>

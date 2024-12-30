@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quelle association te convient le mieux ?</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        #quiz-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <h1>Quelle association te convient le mieux ?</h1>
+        <div id="questions"></div>
+        <button id="prev-btn" style="display: none;">Retour</button>
+        <button id="next-btn">Suivant</button>
+        <button id="submit-btn" style="display: none;">Voir les résultats</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Quel domaine t'intéresse le plus ?",
+                options: ["Environnement", "Éducation", "Santé", "Culture"]
+            },
+            {
+                question: "Combien de temps peux-tu consacrer à une association par semaine ?",
+                options: ["Moins de 2h", "2-5h", "5-10h", "Plus de 10h"]
+            }
+            // Ajoutez d'autres questions ici
+        ];
+
+        const associations = {
+            "Environnement": "Greenpeace",
+            "Éducation": "UNESCO",
+            "Santé": "Médecins Sans Frontières",
+            "Culture": "Les Restos du Cœur"
+        };
+
+        let currentQuestion = 0;
+        const answers = [];
+
+        function displayQuestion() {
+            const questionContainer = document.getElementById('questions');
+            const question = questions[currentQuestion];
+            
+            let html = `<div class="question">
+                <h3>${question.question}</h3>
+                ${question.options.map((option, index) => 
+                    `<label>
+                        <input type="radio" name="q${currentQuestion}" value="${option}" ${answers[currentQuestion] === option ? 'checked' : ''}>
+                        ${option}
+                    </label><br>`
+                ).join('')}
+            </div>`;
+            
+            questionContainer.innerHTML = html;
+
+            document.getElementById('prev-btn').style.display = currentQuestion > 0 ? 'inline-block' : 'none';
+            document.getElementById('next-btn').style.display = currentQuestion < questions.length - 1 ? 'inline-block' : 'none';
+            document.getElementById('submit-btn').style.display = currentQuestion === questions.length - 1 ? 'inline-block' : 'none';
+        }
+
+        function nextQuestion() {
+            const selectedOption = document.querySelector(`input[name="q${currentQuestion}"]:checked`);
+            if (selectedOption) {
+                answers[currentQuestion] = selectedOption.value;
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    displayQuestion();
+                } else {
+                    showResults();
+                }
+            } else {
+                alert("Veuillez sélectionner une option avant de continuer.");
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+            }
+        }
+
+        function showResults() {
+            const result = document.getElementById('result');
+            const mostCommonAnswer = answers.sort((a,b) =>
+                answers.filter(v => v===a).length - answers.filter(v => v===b).length
+            ).pop();
+            
+            result.innerHTML = `<h2>Résultat</h2>
+                <p>L'association qui te convient le mieux est : ${associations[mostCommonAnswer]}</p>`;
+            
+            document.getElementById('questions').style.display = 'none';
+            document.getElementById('prev-btn').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('submit-btn').style.display = 'none';
+        }
+
+        displayQuestion();
+        document.getElementById('prev-btn').addEventListener('click', prevQuestion);
+        document.getElementById('next-btn').addEventListener('click', nextQuestion);
+        document.getElementById('submit-btn').addEventListener('click', showResults);
+    </script>
+</body>
+</html>

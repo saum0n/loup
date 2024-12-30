@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Minimaliste</title>
+    <style>
+        @font-face {
+            font-family: 'Menlo';
+            src: local('Menlo');
+        }
+
+        :root {
+            --dark: #1d262e;
+            --light: #F8FAF5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Menlo, monaco, monospace;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 4rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--dark);
+        }
+
+        nav {
+            margin: 2rem 0;
+        }
+
+        nav a {
+            color: var(--dark);
+            text-decoration: none;
+            margin-right: 2rem;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            border-bottom: 1px solid var(--dark);
+        }
+
+        article {
+            margin-bottom: 4rem;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            font-weight: normal;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            margin: 2rem 0 1rem;
+            font-weight: normal;
+        }
+
+        .date {
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            color: rgba(29, 38, 46, 0.7);
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .read-more {
+            display: inline-block;
+            margin-top: 1rem;
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--dark);
+        }
+
+        footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--dark);
+            font-size: 0.8rem;
+            color: rgba(29, 38, 46, 0.7);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            header {
+                margin-bottom: 2rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            nav {
+                display: flex;
+                flex-direction: column;
+            }
+
+            nav a {
+                margin: 0.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Notes</h1>
+            <nav>
+                <a href="#">Journal</a>
+                <a href="#">À propos</a>
+                <a href="#">Archives</a>
+            </nav>
+        </header>
+
+        <main>
+            <article>
+                <h2>La simplicité dans le design</h2>
+                <div class="date">29 décembre 2024</div>
+                <p>La simplicité n'est pas l'absence de complexité, mais plutôt la réduction à l'essentiel. Dans le design, cela se traduit par l'élimination de tout ce qui n'ajoute pas de valeur à l'expérience utilisateur.</p>
+                <p>Le minimalisme nous permet de nous concentrer sur ce qui compte vraiment : le contenu, le message, l'essence de ce que nous voulons communiquer.</p>
+                <a href="#" class="read-more">Lire la suite →</a>
+            </article>
+
+            <article>
+                <h2>L'importance de la typographie</h2>
+                <div class="date">28 décembre 2024</div>
+                <p>La typographie est l'art de rendre le langage visible. Le choix d'une police comme Menlo, avec son espacement constant et sa clarté, n'est pas anodin. Il reflète une approche où la lisibilité prime sur l'ornementation.</p>
+                <a href="#" class="read-more">Lire la suite →</a>
+            </article>
+        </main>
+
+        <footer>
+            © 2024 · Fait avec soin
+        </footer>
+    </div>
+</body>
+</html>
